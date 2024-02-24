@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"net"
-	"os"
 )
 
 const PORT = 6379
 
 func main() {
-	fmt.Println("Listening on port :", PORT)
+	fmt.Println("Listening on port ", PORT)
 
 	server, err := net.Listen("tcp", fmt.Sprintf(":%d", PORT))
 	if err != nil {
@@ -26,16 +24,14 @@ func main() {
 	defer conn.Close()
 
 	for {
-		buf := make([]byte, 1024)
-
-		_, err = conn.Read(buf)
+		resp := ParseResp(conn)
+		value, err := resp.Read()
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Println("failed reading from Client: ", err.Error())
-			os.Exit(1)
+			fmt.Println(err)
+			return
 		}
+
+		fmt.Println(value)
 
 		conn.Write([]byte("+OK\r\n"))
 	}
