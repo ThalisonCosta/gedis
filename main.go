@@ -25,15 +25,15 @@ func main() {
 
 	for {
 		resp := ParseResp(conn)
-		value, err := resp.Read()
+		_, err := resp.Read()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println(value)
+		writer := NewWriter(conn)
+		writer.Write(Value{typ: "string", str: "FOI!"})
 
-		conn.Write([]byte("+OK\r\n"))
 	}
 
 }
